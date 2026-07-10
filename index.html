@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="tailwindcss" />
+    <title>Document</title>
+    <style>
+        .active {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="flex flex-col border p-4">
+        <div class="flex gap-10">
+            <div onclick="changeMode('list')" class="border w-20 h-8 text-center mode">List</div>
+            <div onclick="changeMode('create')" class="border w-20 h-8 text-center mode">+ Create</div>
+        </div>
+        <div id="content"></div>
+    </div>
+    <script>
+        let currentMode = 'list'
+        function addProduct(f) {
+            var formData = new FormData(f);
+            // output as an object
+            console.log(Object.fromEntries(formData));
+
+
+            let maxId = 0
+            if (products.length > 0) {
+                maxId = Math.max(...products.map(o => o.id))
+            }
+            const newProduct = { id: maxId + 1, ...Object.fromEntries(formData) }
+            products.push(newProduct)
+            changeMode('list')
+            return false
+        }
+        let modes = {
+            list: function () {
+                console.log('list')
+                let table = `<table class='border'>`
+                for (let product of products) {
+                    table += '<tr>'
+                    for (let p in product) {
+                        table += `<td class='border p-2'>${p}: ${product[p]}</td>`
+                    }
+                    table += `</tr>`
+                }
+                table += `</table>`
+                document.getElementById('content').innerHTML = table
+            },
+            create: function () {
+                console.log('create')
+                let form = `<form onsubmit="return addProduct(this)">
+                                <input name='title' class='border' />
+                                <input name='price' class='border' />
+                                <input name='description' class='border'/>
+                                <input name='category' class='border'/>
+                                <button class='border'>Save</button>
+                                <button type="reset" class='border'>Clear</button>
+                            </form>`
+                document.getElementById('content').innerHTML = form
+            },
+
+        }
+        const products = []
+        function changeMode(mode) {
+            const buttons = document.getElementsByClassName('mode')
+            if (buttons.length > 0) {
+                // toggle off active class of old button
+                let currentIndex = Object.keys(modes).indexOf(currentMode)
+                const oldButton = buttons.item(currentIndex)
+                if (oldButton) {
+                    if (currentMode != mode) {
+
+                        oldButton.classList.toggle('active')
+                    }
+                }
+                // toggle on active class of latest click button
+                let newIndex = Object.keys(modes).indexOf(mode)
+                const listButton = buttons.item(newIndex)
+                if (listButton) {
+
+                    listButton.classList.toggle('active')
+                    modes[mode]() // call button function
+                    currentMode = mode
+                }
+            }
+        }
+        changeMode(currentMode)
+
+    </script>
+</body>
+
+</html>
