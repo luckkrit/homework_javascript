@@ -55,7 +55,18 @@
             },
             create: function () {
                 console.log('create')
-                let form = `<form onsubmit="return addProduct(this)">
+                // Method 1
+                // let form = `<form onsubmit="return addProduct(this)">
+                //                 <input name='title' class='border' />
+                //                 <input name='price' class='border' />
+                //                 <input name='description' class='border'/>
+                //                 <input name='category' class='border'/>
+                //                 <button class='border'>Save</button>
+                //                 <button type="reset" class='border'>Clear</button>
+                //             </form>`
+                // document.getElementById('content').innerHTML = form
+                // Method 2
+                let form2 = `<form id="createForm">
                                 <input name='title' class='border' />
                                 <input name='price' class='border' />
                                 <input name='description' class='border'/>
@@ -63,7 +74,11 @@
                                 <button class='border'>Save</button>
                                 <button type="reset" class='border'>Clear</button>
                             </form>`
-                document.getElementById('content').innerHTML = form
+                document.getElementById('content').innerHTML = form2
+                document.getElementById("createForm").addEventListener("submit", function (e) {
+                    e.preventDefault()
+                    addProduct(this)
+                })
             },
 
         }
