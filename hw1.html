@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="tailwindcss" />
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         .active {
             background-color: red;
@@ -88,24 +88,41 @@
             if (buttons.length > 0) {
                 // toggle off active class of old button
                 let currentIndex = Object.keys(modes).indexOf(currentMode)
-                const oldButton = buttons.item(currentIndex)
-                if (oldButton) {
+                const currentButton = buttons.item(currentIndex)
+                if (currentButton) {
                     if (currentMode != mode) {
 
-                        oldButton.classList.toggle('active')
+                        currentButton.classList.toggle('active')
                     }
                 }
                 // toggle on active class of latest click button
                 let newIndex = Object.keys(modes).indexOf(mode)
-                const listButton = buttons.item(newIndex)
-                if (listButton) {
+                const newButton = buttons.item(newIndex)
+                if (newButton) {
 
-                    listButton.classList.toggle('active')
+                    newButton.classList.toggle('active')
                     modes[mode]() // call button function
                     currentMode = mode
                 }
             }
         }
+
+        // AI suggest
+
+        // function changeMode(mode) {
+        //     if (currentMode === mode && document.getElementById('content').innerHTML !== '') return // กันกดซ้ำ
+
+        //     const buttons = document.getElementsByClassName('mode')
+        //     const oldIndex = Object.keys(modes).indexOf(currentMode)
+        //     const newIndex = Object.keys(modes).indexOf(mode)
+
+        //     buttons.item(oldIndex)?.classList.remove('active')
+        //     buttons.item(newIndex)?.classList.add('active')
+
+        //     modes[mode]()
+        //     currentMode = mode
+        // }
+
         changeMode(currentMode)
 
     </script>
