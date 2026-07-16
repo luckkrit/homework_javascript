@@ -40,6 +40,23 @@
             return false
         }
         let modes = {
+            // Method 3
+
+            // addProduct: function (f) {
+            //     var formData = new FormData(f);
+            //     // output as an object
+            //     console.log(Object.fromEntries(formData));
+
+
+            //     let maxId = 0
+            //     if (products.length > 0) {
+            //         maxId = Math.max(...products.map(o => o.id))
+            //     }
+            //     const newProduct = { id: maxId + 1, ...Object.fromEntries(formData) }
+            //     products.push(newProduct)
+            //     changeMode('list')
+            //     return false
+            // },
             list: function () {
                 console.log('list')
                 let table = `<table class='border'>`
@@ -55,18 +72,24 @@
             },
             create: function () {
                 console.log('create')
+                window.a = function (f) {
+                    console.log("work")
+                    var formData = new FormData(f);
+                    // output as an object
+                    console.log(Object.fromEntries(formData));
+
+
+                    let maxId = 0
+                    if (products.length > 0) {
+                        maxId = Math.max(...products.map(o => o.id))
+                    }
+                    const newProduct = { id: maxId + 1, ...Object.fromEntries(formData) }
+                    products.push(newProduct)
+                    changeMode('list')
+                    return false
+                }
                 // Method 1
-                // let form = `<form onsubmit="return addProduct(this)">
-                //                 <input name='title' class='border' />
-                //                 <input name='price' class='border' />
-                //                 <input name='description' class='border'/>
-                //                 <input name='category' class='border'/>
-                //                 <button class='border'>Save</button>
-                //                 <button type="reset" class='border'>Clear</button>
-                //             </form>`
-                // document.getElementById('content').innerHTML = form
-                // Method 2
-                let form2 = `<form id="createForm">
+                let form = `<form onsubmit="return a(this)">
                                 <input name='title' class='border' />
                                 <input name='price' class='border' />
                                 <input name='description' class='border'/>
@@ -74,11 +97,21 @@
                                 <button class='border'>Save</button>
                                 <button type="reset" class='border'>Clear</button>
                             </form>`
-                document.getElementById('content').innerHTML = form2
-                document.getElementById("createForm").addEventListener("submit", function (e) {
-                    e.preventDefault()
-                    addProduct(this)
-                })
+                document.getElementById('content').innerHTML = form
+                // Method 2
+                // let form2 = `<form id="createForm">
+                //                 <input name='title' class='border' />
+                //                 <input name='price' class='border' />
+                //                 <input name='description' class='border'/>
+                //                 <input name='category' class='border'/>
+                //                 <button class='border'>Save</button>
+                //                 <button type="reset" class='border'>Clear</button>
+                //             </form>`
+                // document.getElementById('content').innerHTML = form2
+                // document.getElementById("createForm").addEventListener("submit", function (e) {
+                //     e.preventDefault()
+                //     addProduct(this)
+                // })
             },
 
         }
