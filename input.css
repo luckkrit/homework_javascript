@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@layer components {
+  /* This is your custom class */
+  .btn-primary {
+    @apply bg-amber-200 w-12
+  }
+}
+
