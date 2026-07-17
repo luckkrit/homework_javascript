@@ -142,19 +142,19 @@
 
         // AI suggest
 
-        // function changeMode(mode) {
-        //     if (currentMode === mode && document.getElementById('content').innerHTML !== '') return // กันกดซ้ำ
+        function changeMode(mode) {
+            if (currentMode === mode && document.getElementById('content').innerHTML !== '') return // กันกดซ้ำ
 
-        //     const buttons = document.getElementsByClassName('mode')
-        //     const oldIndex = Object.keys(modes).indexOf(currentMode)
-        //     const newIndex = Object.keys(modes).indexOf(mode)
+            const buttons = document.getElementsByClassName('mode')
+            const oldIndex = Object.keys(modes).indexOf(currentMode)
+            const newIndex = Object.keys(modes).indexOf(mode)
 
-        //     buttons.item(oldIndex)?.classList.remove('active')
-        //     buttons.item(newIndex)?.classList.add('active')
+            buttons.item(oldIndex)?.classList.remove('active')
+            buttons.item(newIndex)?.classList.add('active')
 
-        //     modes[mode]()
-        //     currentMode = mode
-        // }
+            modes[mode]()
+            currentMode = mode
+        }
 
         changeMode(currentMode)
 
