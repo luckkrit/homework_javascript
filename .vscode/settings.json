@@ -1,0 +1,38 @@
+{
+    "vim.useSystemClipboard": true,
+    "vim.easymotion": true,
+    "vim.sneak": true,
+    "vim.sneakReplacesF": true,
+    "vim.sneakUseIgnorecaseAndSmartcase": true,
+    "vim.leader": ",",
+    "vim.surround": true,
+    "vim.camelCaseMotion.enable": true,
+    "vim.normalModeKeyBindings": [
+        {
+            "before": [
+                "<C-p>"
+            ],
+            "commands": [
+                "workbench.action.quickOpen"
+            ],
+        },
+    ],
+    "vim.visualModeKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "J"
+            ],
+            "commands": [
+                "editor.action.moveLinesDownAction"
+            ],
+        },
+        {
+            "before": [
+                "K"
+            ],
+            "commands": [
+                "editor.action.moveLinesUpAction"
+            ],
+        },
+    ],
+}
