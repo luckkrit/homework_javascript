@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 1. สร้างคนงาน (Worker)
+        const myWorker = new Worker('worker.js');
+
+        // 2. สั่งงาน (ส่งข้อมูลไปให้ Worker)
+        const dataToSend = { message: "สวัสดีคนงาน", task: [1, 2, 3] };
+        myWorker.postMessage(dataToSend); // เกิดการ Clone ข้อมูลส่งไป
+
+        // 3. ยืนรอรับผลลัพธ์ (ผ่านคิว Event Loop ปกติ)
+        myWorker.onmessage = function (event) {
+            // ข้อมูลที่ตอบกลับมาจาก Worker จะอยู่ใน event.data
+            console.log("ผลลัพธ์จากคนงาน:", event.data);
+        };
+    </script>
+</body>
+
+</html>
