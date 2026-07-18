@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .balloon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f8ff;
+        }
+
+        .balloon {
+            font-size: 80px;
+            display: inline-flex;
+            animation: floatUp 4s ease-in-out infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100px) rotate(-10deg);
+            }
+
+            50% {
+                transform: translateY(-100px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(100px) rotate(-10deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="balloon-container">
+        <div class="balloon">🎈</div>
+    </div>
+</body>
+
+</html>
