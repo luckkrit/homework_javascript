@@ -1,17 +1,18 @@
 {
   "name": "Node.js & Bun Cloud Environment",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
-  
   // Installs Bun cleanly over the top of the container
   "features": {
     "ghcr.io/devcontainers-extra/features/bun:1": {
       "version": "latest"
-    }
+    },
+    "ghcr.io/devcontainers/features/git-lfs:1": {}
   },
-
   // Forward the network ports for your local dev server (e.g. Bun.serve, Vite, Next.js)
-  "forwardPorts": [3000, 5173],
-
+  "forwardPorts": [
+    3000,
+    5173
+  ],
   // Visual Studio Code settings specific to this Codespace
   "customizations": {
     "vscode": {
@@ -27,7 +28,6 @@
       ]
     }
   },
-
   // Optional: Run any package install scripts automatically after the Codespace loads
-  "postCreateCommand": "bun install"
+  "postCreateCommand": "bun install && git lfs pull"
 }
