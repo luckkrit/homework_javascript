@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         * JavaScript จะมี Loop การทำงานหลักเรียกว่า Event Loop
+         * ดังนั้นลำดับการทำงาน จะมีลำดับการทำงานไม่แน่นอน  
+         * Promise จะได้ลำดับการทำงานก่อน setTimeout
+        */
+        console.log("1. Start");
+
+        setTimeout(() => {
+            console.log("2. Timeout");
+        }, 0);
+
+        setTimeout(() => {
+            console.log("2.1. Timeout");
+        }, 0);
+
+        Promise.resolve().then(() => {
+            console.log("3. Promise");
+        });
+
+        Promise.resolve().then(() => {
+            console.log("3.1. Promise");
+        });
+
+        console.log("4. End");
+    </script>
+
+    <script>
+        // 1. ตั้ง setInterval ไว้ให้รันทุกๆ 0 มิลลิวินาที (เร็วที่สุดเท่าที่เป็นไปได้)
+        const intervalId = setInterval(() => {
+            console.log("⏰ 2. setInterval (Macrotask)");
+            clearInterval(intervalId); // สั่งหยุดหลังจากทำครั้งแรกทันทีเพื่อไม่ให้รันลูปค้าง
+        }, 0);
+
+        // 2. สร้าง Promise ที่ Resolve ทันที
+        Promise.resolve().then(() => {
+            console.log("✨ 3. Promise (Microtask)");
+        });
+
+        // 3. โค้ดเส้นหลักปกติ
+        console.log("🚀 1. Start (Synchronous)");
+    </script>
+</body>
+
+</html>
