@@ -11,64 +11,66 @@
 <body>
     <div id="app"></div>
     <script>
-        const products = [
-            { "id": 1, "title": "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops", "price": 109.95, "description": "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday", "category": "men's clothing" },
-            , { "id": 2, "title": "Mens Casual Premium Slim Fit T-Shirts ", "price": 22.3, "description": "Slim-fitting style, contrast raglan long sleeve, three-button henley placket, light weight & soft fabric for breathable and comfortable wearing. And Solid stitched shirts with round neck made for durability and a great fit for casual fashion wear and diehard baseball fans. The Henley style round neckline includes a three-button placket.", "category": "men's clothing" }
-        ]
         const productApp = {
+            products: [],
             init: function () {
                 const app = `<div class="flex flex-col">
-                                <div class="flex p-2">
-                                    <div class="border border-black px-4 py-2 bg-black text-slate-50">List</div>
-                                    <div class="border px-4 py-2">Create</div>
+                                <div class="flex justify-between">
+                                    <div class="flex p-2">
+                                        <div class="border border-black px-4 py-2 bg-black text-slate-50">List</div>
+                                        <div class="border px-4 py-2">Create</div>
+                                    </div>
+                                    <div class="p-2">
+                                        <div class="border px-4 py-2" onclick="productApp.loadProduct()">Load</div>
+                                    </div>
                                 </div>
                                 <div id="content" class="border">
 
                                 </div>
                             </div>`
                 document.getElementById('app').innerHTML = app;
-                productApp.listProduct();
+                productApp.loadProduct()
+            },
+            loadProduct: function () {
+                fetch('https://fakestoreapi.com/products')
+                    .then(response => response.json())
+                    .then(data => {
+                        productApp.products = [...data]
+                        productApp.listProduct();
+                    });
             },
             addProduct: function () {
                 const form = ``
-
             },
             listProduct: function () {
-                let p = ``
-                products.forEach((element, i) => {
-                    p += `<div class="border rounded-sm p-2">
-                                                    <div class="text-2xl" onclick="productApp.viewProduct(${element, i})">
-                                                        ${element.title}
-                                                    </div>
-                                                </div>`
-                });
-                console.log(p)
+                const p = productApp.products.map((element, i) => `
+                            <div class="border rounded-sm p-2">
+                            <div class="text-2xl" onclick="productApp.viewProduct(${i})">
+                                ${element.title}
+                            </div>
+                            </div>
+                        `).join('');
+
                 const list = `<div class="flex gap-2">
-                                <div class="w-1/3 flex flex-col gap-2 p-2">
-                                    ${p}
-                                </div>
+                                <div class="w-1/3 flex flex-col gap-2 p-2">${p}</div>
                                 <div class="w-2/3 p-2" id="details"></div>
-                              </div>`
-                document.getElementById('content').innerHTML = list
-                if (products.length > 0)
-                    productApp.viewProduct(0);
+                            </div>`;
+                document.getElementById('content').innerHTML = list;
+                if (productApp.products.length > 0) productApp.viewProduct(0);
             },
             viewProduct: function (i) {
-
+                const products = productApp.products[i]
                 const details = `<div class="flex flex-col border p-2">
-                                     <div class="flex gap-2"><div class="font-bold">Title:</div><div>${products[i].title}</div></div>
-                                     <div class="flex gap-2"><div class="font-bold">Price:</div><div>${products[i].price}</div></div>
-                                     <div class="flex gap-2"><div class="font-bold">Description:</div><div>${products[i].description}</div></div>
-                                     <div class="flex gap-2"><div class="font-bold">Description:</div><div>${products[i].category}</div></div>
+                                     <div class="flex gap-2"><div class="font-bold">Title:</div><div>${products.title}</div></div>
+                                     <div class="flex gap-2"><div class="font-bold">Price:</div><div>${products.price}</div></div>
+                                     <div class="flex gap-2"><div class="font-bold">Description:</div><div>${products.description}</div></div>
+                                     <div class="flex gap-2"><div class="font-bold">Category:</div><div>${products.category}</div></div>
                                  </div>`
                 document.getElementById('details').innerHTML = details;
             },
-            createProduct: function () {
-
-            }
+            createProduct: function () {/* เผื่ออนาคตมีข้อ 2 */ }
         }
         productApp.init();
-
     </script>
 </body>
 
