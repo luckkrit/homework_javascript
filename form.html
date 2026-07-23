@@ -11,6 +11,8 @@
     <form id="user">
         <input name="firstName" />
         <input name="lastName" />
+        <input name="email" />
+        <input name="age" />
         <button>Submit</button>
     </form>
     <script>
@@ -77,42 +79,102 @@
         function useForm(id) {
             const form = document.getElementById(id);
             const values = {};
-            const validators = {};
+            const rules = {};       // เก็บ validation rule ต่อ field
+            const errors = {};      // เก็บ error ต่อ field
             let callback = null;
 
             function register(name, options = {}) {
-                validators[name] = options;
-                const el = form.elements[name];
-                values[name] = el.value || '';
-                el.addEventListener('input', (e) => {
-                    values[name] = e.target.value;
-                });
-                return { name }; // เผื่อเอาไปใช้กับ spread บน input ได้
+                values[name] = '';
+                rules[name] = options;   // เก็บ { required: true } ไว้
+                return {
+                    name,
+                    onInput: (e) => {
+                        values[name] = e.target.value;
+                    }
+                };
             }
 
             function validate() {
-                for (const [name, rule] of Object.entries(validators)) {
-                    if (rule.required && !values[name]) return false;
+                let isValid = true;
+                for (const [name, rule] of Object.entries(rules)) {
+                    const value = values[name];
+                    let error = null;
+
+                    if (rule.required && !value) {
+                        error = 'กรุณากรอกข้อมูล';
+                    } else if (rule.minLength && value.length < rule.minLength) {
+                        error = `ต้องมีความยาวอย่างน้อย ${rule.minLength} ตัวอักษร`;
+                    } else if (rule.maxLength && value.length > rule.maxLength) {
+                        error = `ต้องมีความยาวไม่เกิน ${rule.maxLength} ตัวอักษร`;
+                    } else if (rule.pattern && !rule.pattern.test(value)) {
+                        error = 'รูปแบบไม่ถูกต้อง';
+                    } else if (rule.validate) {
+                        const result = rule.validate(value);
+                        if (result !== true) error = result || 'ไม่ผ่านการตรวจสอบ';
+                    }
+
+                    if (error) {
+                        errors[name] = error;
+                        isValid = false;
+                    } else {
+                        delete errors[name];
+                    }
                 }
-                return true;
+                return isValid;
+            }
+
+            function applyProps(el, props) {
+                Object.entries(props).forEach(([key, value]) => {
+                    if (key === 'name') {
+                        el.name = value;
+                    } else if (key.startsWith('on') && typeof value === 'function') {
+                        const eventName = key.slice(2).toLowerCase();
+                        el.addEventListener(eventName, value);
+                    }
+                });
             }
 
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
-                if (validate() && callback) callback(values);
+                if (validate() && callback) {
+                    callback(values);
+                } else {
+                    console.log('errors:', errors); // เช็คตรงนี้ได้ว่า field ไหนพลาด
+                }
             });
 
             return {
                 register,
+                applyProps,
+                errors,
                 handleSubmit: (fn) => { callback = fn; }
             };
         }
 
-        const { register, handleSubmit } = useForm('user');
-        register('firstName', { required: true });
-        register('lastName', { required: true });
+        const { register, applyProps, errors, handleSubmit } = useForm('user');
 
-        handleSubmit((values) => console.log(values));
+        applyProps(
+            document.querySelector('[name="firstName"]'),
+            register('firstName', { required: true, minLength: 2 })
+        );
+        applyProps(
+            document.querySelector('[name="lastName"]'),
+            register('lastName', { required: true, minLength: 2 })
+        );
+
+        applyProps(
+            document.querySelector('[name="email"]'),
+            register('email', { required: true, pattern: /^\S+@\S+\.\S+$/ })
+        );
+        applyProps(
+            document.querySelector('[name="age"]'),
+            register('age', { validate: (v) => Number(v) >= 18 || 'ต้องอายุ 18 ปีขึ้นไป' })
+        );
+
+        handleSubmit((values) => {
+            console.log(errors);
+            console.log(values);
+        });
     </script>
 </body>
 
