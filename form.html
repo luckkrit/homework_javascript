@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form id="user">
+        <input name="firstName" />
+        <input name="lastName" />
+        <button>Submit</button>
+    </form>
+    <script>
+        // Way 1 : Key-Values
+        class MyForm {
+            constructor(id) {
+                this.form = document.getElementById(id);
+                this.values = {};
+                this.errors = {};
+                const that = this;
+
+                Array.from(this.form.elements).forEach((input) => {
+                    if (!input.name) return;
+                    that.values[input.name] = input.value || '';
+                    input.addEventListener('input', (e) => {
+                        that.values[e.target.name] = e.target.value;
+                    });
+                });
+
+                this.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (that.validate() && that.callback) {
+                        that.callback(that.values);
+                    }
+                });
+            }
+
+            validate() {
+                // ใส่ logic required/pattern ตรงนี้
+                return true;
+            }
+
+            handleSubmit(callback) {
+                this.callback = callback;
+            }
+        }
+
+        // const myForm = new MyForm('user');
+        // myForm.handleSubmit((values) => {
+        //     // ส่งข้อมูลจริง เช่น fetch(...) ตรงนี้ ไม่เรียก native submit
+        //     console.log(values);
+        // });
+
+        // Way 2 : FormData
+        class MyForm2 {
+            constructor(id) {
+                this.form = document.getElementById(id);
+                this.callback = null;
+
+                this.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const data = new FormData(this.form);
+                    const values = Object.fromEntries(data.entries());
+                    if (this.callback) this.callback(values);
+                });
+            }
+
+            handleSubmit(callback) {
+                this.callback = callback;
+            }
+        }
+
+        // Way 3 (Proxy)
+        function useForm(id) {
+            const form = document.getElementById(id);
+            const values = {};
+            const validators = {};
+            let callback = null;
+
+            function register(name, options = {}) {
+                validators[name] = options;
+                const el = form.elements[name];
+                values[name] = el.value || '';
+                el.addEventListener('input', (e) => {
+                    values[name] = e.target.value;
+                });
+                return { name }; // เผื่อเอาไปใช้กับ spread บน input ได้
+            }
+
+            function validate() {
+                for (const [name, rule] of Object.entries(validators)) {
+                    if (rule.required && !values[name]) return false;
+                }
+                return true;
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (validate() && callback) callback(values);
+            });
+
+            return {
+                register,
+                handleSubmit: (fn) => { callback = fn; }
+            };
+        }
+
+        const { register, handleSubmit } = useForm('user');
+        register('firstName', { required: true });
+        register('lastName', { required: true });
+
+        handleSubmit((values) => console.log(values));
+    </script>
+</body>
+
+</html>
