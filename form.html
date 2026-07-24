@@ -15,6 +15,10 @@
         <input name="age" />
         <button>Submit</button>
     </form>
+
+    <div id="preview-firstName">First Name: </div>
+    <div id="preview-lastName">Last Name: </div>
+
     <script>
         // Way 1 : Key-Values
         class MyForm {
@@ -75,106 +79,82 @@
             }
         }
 
-        // Way 3 (Proxy)
-        function useForm(id) {
-            const form = document.getElementById(id);
-            const values = {};
-            const rules = {};       // เก็บ validation rule ต่อ field
-            const errors = {};      // เก็บ error ต่อ field
-            let callback = null;
-
-            function register(name, options = {}) {
-                values[name] = '';
-                rules[name] = options;   // เก็บ { required: true } ไว้
-                return {
-                    name,
-                    onInput: (e) => {
-                        values[name] = e.target.value;
-                    }
-                };
-            }
-
-            function validate() {
-                let isValid = true;
-                for (const [name, rule] of Object.entries(rules)) {
-                    const value = values[name];
-                    let error = null;
-
-                    if (rule.required && !value) {
-                        error = 'กรุณากรอกข้อมูล';
-                    } else if (rule.minLength && value.length < rule.minLength) {
-                        error = `ต้องมีความยาวอย่างน้อย ${rule.minLength} ตัวอักษร`;
-                    } else if (rule.maxLength && value.length > rule.maxLength) {
-                        error = `ต้องมีความยาวไม่เกิน ${rule.maxLength} ตัวอักษร`;
-                    } else if (rule.pattern && !rule.pattern.test(value)) {
-                        error = 'รูปแบบไม่ถูกต้อง';
-                    } else if (rule.validate) {
-                        const result = rule.validate(value);
-                        if (result !== true) error = result || 'ไม่ผ่านการตรวจสอบ';
-                    }
-
-                    if (error) {
-                        errors[name] = error;
-                        isValid = false;
-                    } else {
-                        delete errors[name];
-                    }
-                }
-                return isValid;
-            }
-
-            function applyProps(el, props) {
-                Object.entries(props).forEach(([key, value]) => {
-                    if (key === 'name') {
-                        el.name = value;
-                    } else if (key.startsWith('on') && typeof value === 'function') {
-                        const eventName = key.slice(2).toLowerCase();
-                        el.addEventListener(eventName, value);
-                    }
-                });
-            }
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                if (validate() && callback) {
-                    callback(values);
-                } else {
-                    console.log('errors:', errors); // เช็คตรงนี้ได้ว่า field ไหนพลาด
-                }
-            });
-
-            return {
-                register,
-                applyProps,
-                errors,
-                handleSubmit: (fn) => { callback = fn; }
-            };
-        }
-
-        const { register, applyProps, errors, handleSubmit } = useForm('user');
-
-        applyProps(
-            document.querySelector('[name="firstName"]'),
-            register('firstName', { required: true, minLength: 2 })
-        );
-        applyProps(
-            document.querySelector('[name="lastName"]'),
-            register('lastName', { required: true, minLength: 2 })
-        );
-
-        applyProps(
-            document.querySelector('[name="email"]'),
-            register('email', { required: true, pattern: /^\S+@\S+\.\S+$/ })
-        );
-        applyProps(
-            document.querySelector('[name="age"]'),
-            register('age', { validate: (v) => Number(v) >= 18 || 'ต้องอายุ 18 ปีขึ้นไป' })
-        );
-
-        handleSubmit((values) => {
-            console.log(errors);
-            console.log(values);
-        });
+        // // Way 3 (Proxy)
+        // function useForm(id) {
+        //     const form = document.getElementById(id);
+        //     let callback = null;
+ 
+        //     const values = {};       // plain object ธรรมดา ไม่มี Proxy
+        //     const subscribers = {};  // เก็บ subscriber แยกตาม field name
+ 
+        //     function subscribe(name, fn) {
+        //         if (!subscribers[name]) subscribers[name] = new Set();
+        //         subscribers[name].add(fn);
+        //     }
+ 
+        //     function notify(name, value) {
+        //         if (subscribers[name]) {
+        //             subscribers[name].forEach(fn => fn(value));
+        //         }
+        //     }
+ 
+        //     // ฟังก์ชันนี้แทนที่ Proxy's set trap
+        //     // ทุกครั้งที่จะเปลี่ยนค่า ต้องเรียกผ่านฟังก์ชันนี้เสมอ
+        //     function setValue(name, value) {
+        //         values[name] = value;
+        //         notify(name, value); // แจ้ง subscriber ตรงๆ ไม่ต้องพึ่ง Proxy
+        //     }
+ 
+        //     function register(name, options = {}) {
+        //         setValue(name, '');
+        //         return {
+        //             name,
+        //             onInput: (e) => { setValue(name, e.target.value); }
+        //         };
+        //     }
+ 
+        //     function applyProps(el, props) {
+        //         Object.entries(props).forEach(([key, value]) => {
+        //             if (key === 'name') {
+        //                 el.name = value;
+        //             } else if (key.startsWith('on') && typeof value === 'function') {
+        //                 const eventName = key.slice(2).toLowerCase();
+        //                 el.addEventListener(eventName, value);
+        //             }
+        //         });
+        //     }
+ 
+        //     form.addEventListener('submit', (e) => {
+        //         e.preventDefault();
+        //         if (callback) callback(values);
+        //     });
+ 
+        //     return {
+        //         register,
+        //         applyProps,
+        //         values,
+        //         subscribe,
+        //         handleSubmit: (fn) => { callback = fn; }
+        //     };
+        // }
+ 
+        // const { register, applyProps, values, subscribe, handleSubmit } = useForm('user');
+ 
+        // // ผูก register + applyProps เข้ากับ input จริง (เหมือน React: {...register('firstName')})
+        // const inputs = document.querySelectorAll('#user input');
+        // applyProps(inputs[0], register('firstName'));
+        // applyProps(inputs[1], register('lastName'));
+ 
+        // // ผูก preview div เข้ากับ values แบบ real-time ผ่าน subscribe
+        // subscribe('firstName', (v) => {
+        //     document.getElementById('preview-firstName').textContent = `First Name: ${v}`;
+        // });
+ 
+        // subscribe('lastName', (v) => {
+        //     document.getElementById('preview-lastName').textContent = `Last Name: ${v}`;
+        // });
+ 
+        // handleSubmit((v) => console.log('Submitted:', v));
     </script>
 </body>
 
