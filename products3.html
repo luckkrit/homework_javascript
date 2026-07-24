@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>ตัวนับสินค้าในตะกร้า</h2>
+
+    <div id="header-badge">0</div>
+    <div id="sidebar-count">0 items</div>
+    <div id="total-price">รวม: 0 บาท</div>
+
+    <button id="incBtn">+1 ชิ้น</button>
+    <button id="decBtn">-1 ชิ้น</button>
+    <button id="resetBtn">Reset</button>
+    <script>
+        function signal(initial) {
+            let value = initial;
+            const subscribers = new Set();
+            return {
+                get: () => value,
+                set: (v) => {
+                    if (v === value) return;
+                    value = v;
+                    subscribers.forEach(fn => fn(v));
+                },
+                subscribe: (fn) => subscribers.add(fn)
+            };
+        }
+
+        const ProductApp = {
+            count: signal(0),      // <-- เปลี่ยนจาก 0 ธรรมดา เป็น signal(0)
+            pricePerItem: 50,
+
+            init: function () {
+                // subscribe ครั้งเดียว ผูกกับ DOM แต่ละจุด แทน updateUI()
+                this.count.subscribe(v => {
+                    document.getElementById('header-badge').textContent = v;
+                });
+
+                this.count.subscribe(v => {
+                    document.getElementById('sidebar-count').textContent = `${v} items`;
+                });
+
+                this.count.subscribe(v => {
+                    document.getElementById('total-price').textContent = `รวม: ${v * this.pricePerItem} บาท`;
+                });
+
+                document.getElementById('incBtn').addEventListener('click', () => {
+                    this.count.set(this.count.get() + 1); // ไม่ต้องเรียก updateUI() แล้ว
+                });
+
+                document.getElementById('decBtn').addEventListener('click', () => {
+                    if (this.count.get() > 0) this.count.set(this.count.get() - 1);
+                });
+
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.count.set(0);
+                });
+
+                // ไม่ต้องเรียก this.updateUI() ตอนจบ init() แล้ว
+                // เพราะ subscribe ทำงานตอน .set() ถูกเรียกเท่านั้น
+                // ต้องยิงค่าเริ่มต้นเองครั้งแรก (ดูหมายเหตุด้านล่าง)
+                this.count.set(this.count.get());
+            }
+        }
+        ProductApp.init();
+    </script>
+</body>
+
+</html>

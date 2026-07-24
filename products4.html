@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>ตัวนับสินค้าในตะกร้า</h2>
+
+    <div id="header-badge">0</div>
+    <div id="sidebar-count">0 items</div>
+    <div id="total-price">รวม: 0 บาท</div>
+
+    <button id="incBtn">+1 ชิ้น</button>
+    <button id="decBtn">-1 ชิ้น</button>
+    <button id="resetBtn">Reset</button>
+    <script>
+        const ProductApp = {
+            count: 0,                       // ตัวแปรธรรมดา ไม่มี signal
+            pricePerItem: 50,
+            events: new EventTarget(),      // ตัวกลางสำหรับยิง/ฟัง event แทน subscribers
+
+            init: function () {
+                // ฟัง event ครั้งเดียว ผูกกับ DOM แต่ละจุด แทน subscribe ของ signal
+                this.events.addEventListener('count-changed', (e) => {
+                    document.getElementById('header-badge').textContent = e.detail;
+                });
+
+                this.events.addEventListener('count-changed', (e) => {
+                    document.getElementById('sidebar-count').textContent = `${e.detail} items`;
+                });
+
+                this.events.addEventListener('count-changed', (e) => {
+                    document.getElementById('total-price').textContent = `รวม: ${e.detail * this.pricePerItem} บาท`;
+                });
+
+                document.getElementById('incBtn').addEventListener('click', () => {
+                    this.setCount(this.count + 1);
+                });
+
+                document.getElementById('decBtn').addEventListener('click', () => {
+                    if (this.count > 0) this.setCount(this.count - 1);
+                });
+
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.setCount(0);
+                });
+
+                // ยิงค่าเริ่มต้นครั้งแรก เพื่อให้ DOM โชว์ค่าตั้งต้น (0)
+                this.setCount(this.count);
+            },
+
+            // ฟังก์ชันนี้แทนที่ count.set(v) ของ signal
+            // เขียนค่าใหม่ + ยิง custom event แทนการวน subscribers.forEach เอง
+            setCount: function (v) {
+                this.count = v;
+                this.events.dispatchEvent(new CustomEvent('count-changed', { detail: v }));
+            }
+        }
+        ProductApp.init();
+    </script>
+</body>
+
+</html>

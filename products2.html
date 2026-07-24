@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>ตัวนับสินค้าในตะกร้า</h2>
+
+    <div id="header-badge">0</div>
+    <div id="sidebar-count">0 items</div>
+    <div id="total-price">รวม: 0 บาท</div>
+
+    <button id="incBtn">+1 ชิ้น</button>
+    <button id="decBtn">-1 ชิ้น</button>
+    <button id="resetBtn">Reset</button>
+    <script>
+        const ProductApp = {
+            count: 0,
+            pricePerItem: 50,
+            init: function () {
+
+                document.getElementById('incBtn').addEventListener('click', () => {
+                    this.count++;
+                    this.updateUI(); // ต้องเรียกเองทุกครั้ง ห้ามลืม
+                });
+
+                document.getElementById('decBtn').addEventListener('click', () => {
+                    if (this.count > 0) this.count--;
+                    this.updateUI(); // เรียกซ้ำอีกครั้ง ห้ามลืมอีก
+                });
+
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.count = 0;
+                    this.updateUI(); // เรียกอีกรอบ
+                });
+
+                this.updateUI()
+            },
+            updateUI: function () {
+                document.getElementById('header-badge').textContent = this.count;
+                document.getElementById('sidebar-count').textContent = `${this.count} items`;
+                document.getElementById('total-price').textContent = `รวม: ${this.count * this.pricePerItem} บาท`;
+            }
+        }
+        ProductApp.init();
+    </script>
+</body>
+
+</html>
