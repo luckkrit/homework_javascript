@@ -234,36 +234,31 @@
                 this.form = document.getElementById(id);
 
                 this.values = {};
-                this.errors = {};
                 const that = this;
-
                 for (const input of this.form.elements) {
                     if (!input.name) continue;
                     that.values[input.name] = input.value || '';
+                    console.log(that.values)
                     input.addEventListener('input', function (e) {
+                        console.log(e.target.name, e.target.value)
                         that.values[e.target.name] = e.target.value;
                     });
+
                 }
 
-
-                // Array.from(this.form.elements).forEach((input) => {
-                //     if (!input.name) return;
-                //     that.values[input.name] = input.value || '';
-                //     input.addEventListener('input', (e) => {
-                //         that.values[e.target.name] = e.target.value;
-                //     });
-                // });
+                this.form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    console.log("this = ", this)
+                    that.callback(that.values);
+                });
 
                 this.form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    document.getElementById('values').innerHTML = this.form
-                    if (that.validate() && that.callback) {
+                    e.preventDefault()
+                    console.log(this)
+                })
 
-                        that.callback(that.values);
-                    }
-                });
+
             }
-
             validate() {
                 // ใส่ logic required/pattern ตรงนี้
                 return true;
@@ -272,15 +267,20 @@
             handleSubmit(callback) {
                 this.callback = callback;
             }
+
         }
         const myForm = new MyForm('contact_form')
-
-        
-        // myForm.handleSubmit((values) => {
-        //     // ส่งข้อมูลจริง เช่น fetch(...) ตรงนี้ ไม่เรียก native submit
-        //     console.log(values);
-        //     document.getElementById('values').innerHTML = JSON.stringify(values)
-        // });
+        function a(e) {
+            // ส่งข้อมูลจริง เช่น fetch(...) ตรงนี้ ไม่เรียก native submit
+            console.log(e);
+            // document.getElementById('values').innerHTML = JSON.stringify(values)
+        }
+        myForm.handleSubmit((values) => {
+            // ส่งข้อมูลจริง เช่น fetch(...) ตรงนี้ ไม่เรียก native submit
+            console.log(values);
+            document.getElementById('values').innerHTML = JSON.stringify(values)
+        });
+        // myForm.handleSubmit(a);
     </script>
 </body>
 
