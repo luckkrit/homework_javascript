@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+
+    <button id="add">Add</button>
+    <div id="boxes" class="flex gap-2">
+        <div class="box border size-10">box</div>
+        <div class="box border size-10">box</div>
+        <div class="box border size-10">box</div>
+    </div>
+
+
+    <script>
+        // Event delegation (Recommended)
+        function handleClick(target, current) { console.log(target, current); }
+        document.body.addEventListener('click', (e) => {
+            if (e.target.classList.contains('box')) {
+                handleClick.call(e.target, e);
+            }
+        });
+        document.getElementById('add').addEventListener('click', function (e) {
+            document.getElementById('boxes').insertAdjacentHTML('beforeend', '<div class="box border size-10">box</div>');
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="cart-icon">🛒 (<span id="cart-count">0</span>)</div>
+    <div id="total-price">รวม: 0 บาท</div>
+    <div id="notification"></div>
+
+    <button onclick="addToCart({name: 'เสื้อ', price: 250})">เพิ่มเสื้อ</button>
+    <button onclick="addToCart({name: 'กางเกง', price: 450})">เพิ่มกางเกง</button>
+
+    <script>
+
+        // Refactor pub/sub
+        let cartItems = [];
+        let listeners = [];
+
+        function subscribe(callback) {
+            listeners.push(callback);
+        }
+
+        function notify(data) {
+            listeners.forEach(fn => fn(data));
+        }
+
+        function addToCart(item) {
+            cartItems.push(item);
+            notify({ item, cartItems }); // publish เฉยๆ ไม่รู้ว่าใครฟังอยู่
+        }
+
+        // ===== ให้นักศึกษาเขียนส่วนนี้เอง =====
+        // TODO 1: subscribe ฟังก์ชันอัปเดต cart-count
+        subscribe(function () {
+            document.getElementById('cart-count').textContent = cartItems.length;
+        })
+        // TODO 2: subscribe ฟังก์ชันอัปเดต total-price
+        subscribe(function () {
+            const total = cartItems.reduce((sum, i) => sum + i.price, 0);
+            document.getElementById('total-price').textContent = `รวม: ${total} บาท`;
+        })
+        // TODO 3: subscribe ฟังก์ชันโชว์ notification (หายเองใน 2 วิ)
+        subscribe(function (e) {
+            const note = document.getElementById('notification');
+            note.textContent = `เพิ่ม ${e.item.name} แล้ว`;
+            setTimeout(() => note.textContent = '', 2000);
+        })
+    </script>
+</body>
+
+</html>

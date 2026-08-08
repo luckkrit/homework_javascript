@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+    <div id="grandparent" class="border bg-blue-500 p-2">
+        grandparent <span id="grandparent_count">0</span>
+        <div id="parent" class="border bg-green-500 w-full p-2">
+            parent <span id="parent_count">0</span>
+            <div id="child" class="border bg-red-500 w-full p-2">
+                child <span id="child_count">0</span>
+                <div id="once" class="border bg-orange-500 w-full p-2">
+                    Once <span id="once_count">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let grandparent_count = 0, parent_count = 0, child_count = 0, once_count = 0
+        const grandparent = document.getElementById('grandparent'),
+            parent = document.getElementById('parent'),
+            child = document.getElementById('child'),
+            once = document.getElementById('once')
+
+        grandparent.addEventListener('click', () => grandparent_count++);
+        parent.addEventListener('click', () => parent_count++);
+        child.addEventListener('click', () => child_count++);
+
+        grandparent.addEventListener('click', () => document.getElementById('grandparent_count').textContent = grandparent_count);
+        parent.addEventListener('click', () => document.getElementById('parent_count').textContent = parent_count);
+        child.addEventListener('click', () => document.getElementById('child_count').textContent = child_count);
+
+        once.addEventListener('click', () => document.getElementById('once_count').textContent = ++once_count, { once: true })
+
+
+
+    </script>
+</body>
+
+</html>

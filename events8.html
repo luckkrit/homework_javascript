@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="cart-icon">🛒 (<span id="cart-count">0</span>)</div>
+    <div id="total-price">รวม: 0 บาท</div>
+    <div id="notification"></div>
+
+    <button onclick="addToCart({name: 'เสื้อ', price: 250})">เพิ่มเสื้อ</button>
+    <button onclick="addToCart({name: 'กางเกง', price: 450})">เพิ่มกางเกง</button>
+
+    <script>
+        // tight coupling
+        let cartItems = [];
+
+        function addToCart(item) {
+            cartItems.push(item);
+
+            // ทุกอย่างยัดอยู่ในฟังก์ชันเดียว
+            document.getElementById('cart-count').textContent = cartItems.length;
+
+            const total = cartItems.reduce((sum, i) => sum + i.price, 0);
+            document.getElementById('total-price').textContent = `รวม: ${total} บาท`;
+
+            const note = document.getElementById('notification');
+            note.textContent = `เพิ่ม ${item.name} แล้ว`;
+            setTimeout(() => note.textContent = '', 2000);
+        }
+    </script>
+</body>
+
+</html>

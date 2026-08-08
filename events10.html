@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="cart-icon">🛒 (<span id="cart-count">0</span>)</div>
+    <div id="total-price">รวม: 0 บาท</div>
+    <div id="notification"></div>
+
+    <button onclick="addToCart({name: 'เสื้อ', price: 250})">เพิ่มเสื้อ</button>
+    <button onclick="addToCart({name: 'กางเกง', price: 450})">เพิ่มกางเกง</button>
+
+    <script>
+
+        // Event Emitter จะเก็บ event ได้หลากหลาย ต่างจาก pub/sub ที่เก็บรวมกันทุก event ไม่ได้แยกประเภท
+
+        /*
+            แล้วทำไมถึงยังมีคนเขียน EventEmitter เอง
+            1. ไม่ต้องพึ่ง DOM — addEventListener ผูกกับ EventTarget ซึ่งปกติต้องมี element หรือสร้าง dummy element ขึ้นมาแบบตัวอย่างข้างบน (ดูแปลกๆ) ถ้าเขียนโค้ดที่ไม่เกี่ยวกับ browser เลย เช่น Node.js backend ไม่มี DOM ให้ใช้ — ต้องมี EventEmitter ของตัวเอง (นี่คือเหตุผลที่ Node.js มี built-in EventEmitter class)
+            2. CustomEvent เขียนละเอียดกว่า — ต้อง new CustomEvent(name, { detail: data }) ทุกครั้ง ในขณะที่ EventEmitter เอง ส่ง data ตรงๆ ได้เลย กระชับกว่า
+            3. ควบคุม behavior เพิ่มเติมได้เอง — เช่นอยากทำ once() (ฟังแค่ครั้งเดียวแล้วลบตัวเอง), หรือ error handling พิเศษ, หรือ debug logging ทุกครั้งที่ emit — ทำเองแล้ว custom ได้ง่ายกว่า
+        */
+
+        class EventEmitter {
+            constructor() {
+                this.events = {}; // { eventName: [callback1, callback2, ...] }
+            }
+
+            on(eventName, callback) {
+                if (!this.events[eventName]) {
+                    this.events[eventName] = [];
+                }
+                this.events[eventName].push(callback);
+            }
+
+            off(eventName, callback) {
+                if (!this.events[eventName]) return;
+                this.events[eventName] = this.events[eventName].filter(fn => fn !== callback);
+            }
+
+            emit(eventName, data) {
+                if (!this.events[eventName]) return;
+                this.events[eventName].forEach(fn => fn(data));
+            }
+        }
+
+        let cartItems = [];
+
+        function updateTotalPrice() {
+            const total = cartItems.reduce((sum, i) => sum + i.price, 0);
+            document.getElementById('total-price').textContent = `รวม: ${total} บาท`;
+        }
+        function updateCartIcon() {
+            document.getElementById('cart-count').textContent = cartItems.length;
+        }
+        function showNoti(e) {
+            const note = document.getElementById('notification');
+            note.textContent = `เพิ่ม ${e.name} แล้ว`;
+            setTimeout(() => note.textContent = '', 2000);
+        }
+
+        const cartEmitter = new EventEmitter();
+
+        cartEmitter.on('cart:add', (item) => {
+            console.log(`เพิ่ม ${item.name} แล้ว`);
+        });
+
+        cartEmitter.on('cart:add', (item) => {
+            updateCartIcon()
+        });
+
+        cartEmitter.on('cart:add', (item) => {
+            updateTotalPrice()
+        });
+
+        cartEmitter.on('cart:add', (item) => {
+            showNoti(item)
+        });
+
+        cartEmitter.on('cart:remove', (item) => {
+            console.log(`เอา ${item.name} ออกแล้ว`);
+        });
+
+        function addToCart(item) {
+            cartItems.push(item);
+            cartEmitter.emit('cart:add', item); // ยิงเฉพาะคนที่ฟัง 'cart:add'
+        }
+    </script>
+</body>
+
+</html>

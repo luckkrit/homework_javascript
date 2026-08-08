@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+    <button class="border w-20 create-btn">Create Product</button>
+    <div class="flex w-full border p-2 products gap-2">
+        <div class="border flex flex-col size-20 justify-between">
+            <div class="text-lg text-center">
+                Shirt
+            </div>
+            <div class="flex justify-between p-2">
+                <button class="plus-btn size-4 border text-base/2 align-middle" onclick="addToCart('Shirt')">+</button>
+                <button class="minus-btn size-4 border text-base/2 align-middle">-</button>
+            </div>
+        </div>
+
+        <div class="border flex flex-col size-20 justify-between">
+            <div class="text-lg text-center">
+                Skirt
+            </div>
+            <div class="flex justify-between p-2">
+                <button class="plus-btn size-4 border text-base/2 align-middle" onclick="addToCart('Shirt')">+</button>
+                <button class="minus-btn size-4 border text-base/2 align-middle">-</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // custom event
+        const cartTarget = document.createElement('div'); // ใช้เป็น "event bus" เฉยๆ ไม่ต้อง render จริง
+        const cartItems = []
+        cartTarget.addEventListener('cart:add', (e) => {
+            console.log('update cart icon', e.detail)
+        });
+
+        cartTarget.addEventListener('cart:add', (e) => {
+            console.log('update total price', e.detail)
+        });
+
+        cartTarget.addEventListener('cart:add', (e) => {
+            console.log('add log analytics', e.detail)
+        });
+
+        function addToCart(item) {
+            cartItems.push(item);
+            cartTarget.dispatchEvent(new CustomEvent('cart:add', { detail: item }));
+        }
+    </script>
+</body>
+
+</html>
